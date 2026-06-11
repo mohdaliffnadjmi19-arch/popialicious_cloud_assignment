@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popialicious Booking System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, sans-serif; transition: 0.3s; }
+        .hero-section { background-color: #ff9800; color: white; padding: 20px 0; text-align: center; border-bottom: 5px solid #e65100; transition: 0.3s; }
+        .card-custom { box-shadow: 0 5px 20px rgba(0,0,0,0.08); border: none; border-radius: 12px; background-color: white; margin-bottom: 20px; transition: 0.3s; }
+        .receipt-box { background-color: #e9ecef; border-radius: 8px; padding: 15px; font-family: monospace; font-size: 14px; transition: 0.3s; }
+        
+        /* Dark Mode */
+        body.dark-mode { background-color: #121212; color: #ffffff; }
+        body.dark-mode .hero-section { background-color: #1a1a1a; border-bottom: 5px solid #ff9800; }
+        body.dark-mode .card-custom { background-color: #1e1e1e; color: #ffffff; box-shadow: 0 5px 20px rgba(255,255,255,0.05); }
+        body.dark-mode .receipt-box { background-color: #2c2c2c; color: #ffeb3b; }
+        body.dark-mode .form-control { background-color: #2c2c2c; color: #ffffff; border-color: #444; }
+
+        /* Hide inactive sections initially */
+        #signupSection, #customerSection, #staffSection { display: none; }
+    </style>
+</head>
+<body>
+
+    <header class="hero-section position-relative">
+        <div class="container">
+            <h1 class="display-6 fw-bold">Popialicious Booking System</h1>
+            <button class="btn btn-dark btn-sm position-absolute top-50 end-0 translate-middle-y me-3" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+        </div>
+    </header>
+
+    <div class="container my-5">
+        
+        <div id="mainLogin" class="row justify-content-center">
+            
+            <div class="col-md-5 mb-4">
+                <div class="card card-custom p-5 text-center h-100 border-top border-primary border-4">
+                    <h3 class="mb-3 text-primary">Customer Login</h3>
+                    <p class="text-muted small mb-4">To place your Popia order</p>
+                    
+                    <input type="text" id="custUser" class="form-control mb-3" placeholder="Customer Username">
+                    <input type="password" id="custPass" class="form-control mb-4" placeholder="Password">
+                    <button class="btn btn-primary w-100 fw-bold mb-3" onclick="loginCustomer()">Login</button>
+                    <p class="small mb-0">Don't have an account? <a href="#" onclick="showSignup()">Register Here</a></p>
+                </div>
+            </div>
+
+            <div class="col-md-5 mb-4">
+                <div class="card card-custom p-5 text-center h-100 border-top border-danger border-4 bg-light">
+                    <h3 class="mb-3 text-danger">Staff Login</h3>
+                    <p class="text-muted small mb-4">Admin Access: <b>admin</b> | Pass: <b>1234</b></p>
+                    
+                    <input type="text" id="staffUser" class="form-control mb-3" placeholder="Staff Username">
+                    <input type="password" id="staffPass" class="form-control mb-4" placeholder="Password">
+                    <button class="btn btn-danger w-100 fw-bold" onclick="loginStaff()">Enter Dashboard</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="signupSection" class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card card-custom p-5 text-center border-top border-success border-4">
+                    <h3 class="mb-3 text-success">Customer Registration</h3>
+                    <p class="text-muted small mb-4">Create your login details to start ordering.</p>
+                    <input type="text" id="regUser" class="form-control mb-3" placeholder="Choose New Username">
+                    <input type="password" id="regPass" class="form-control mb-4" placeholder="Choose New Password">
+                    <button class="btn btn-success w-100 fw-bold mb-3" onclick="registerCustomer()">Register Account</button>
+                    <p class="small mb-0"><a href="#" onclick="showLogin()">Cancel & Return to Login</a></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="customerSection" class="row justify-content-center">
+            <div class="col-md-12 text-end mb-3">
+                <span class="badge bg-primary p-2 me-2">Mode: Active Customer</span>
+                <button class="btn btn-outline-danger btn-sm" onclick="logout()">Logout</button>
+            </div>
+            <div class="col-md-8">
+                <div class="card card-custom p-4 border-top border-primary border-4">
+                    <h4 class="mb-4">Popia Carbonara Order Form</h4>
+                    <input type="text" class="form-control mb-3" id="orderName" placeholder="Full Name (e.g., John Doe)">
+                    <input type="tel" class="form-control mb-3" id="orderPhone" placeholder="Phone Number (e.g., 0123456789)">
+                    <textarea class="form-control mb-3" id="orderAddress" rows="2" placeholder="Complete Delivery Address"></textarea>
+                    <hr>
+                    <label class="fw-bold mb-2">Quantity (Packs): <span class="text-muted small fw-normal">RM 15.00/pack</span></label>
+                    <input type="number" class="form-control mb-3" id="quantity" value="1" min="1" onchange="calculateTotal()" onkeyup="calculateTotal()">
+                    <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
+                        <h5 class="mb-0">Total Amount:</h5>
+                        <h3 class="text-success fw-bold mb-0" id="totalPrice">RM 15.00</h3>
+                    </div>
+                    <button class="btn btn-warning w-100 fw-bold btn-lg" onclick="processOrder()">Confirm & Send via WhatsApp</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="staffSection" class="row justify-content-center">
+            <div class="col-md-12 text-end mb-3">
+                <span class="badge bg-danger p-2 me-2">Mode: Staff (Admin)</span>
+                <button class="btn btn-outline-danger btn-sm" onclick="logout()">Logout</button>
+            </div>
+            <div class="col-md-8">
+                <div class="card card-custom p-4 border-top border-danger border-4">
+                    <h4 class="mb-3">Staff Management Panel</h4>
+                    <p class="text-muted small mb-4">Monitor the latest orders from the system database (LocalStorage).</p>
+                    <h6 class="fw-bold">Last Order Receipt:</h6>
+                    <div id="receiptArea" class="receipt-box mb-4"><i>No data records found.</i></div>
+                    <button class="btn btn-danger w-100 fw-bold" onclick="clearData()">Clear Database Records</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const pricePerPack = 15.00;
+
+        // --- UI FUNCTIONS ---
+        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
+        
+        function showSignup() { 
+            document.getElementById('mainLogin').style.display='none'; 
+            document.getElementById('signupSection').style.display='flex'; 
+        }
+        
+        function showLogin() { 
+            document.getElementById('mainLogin').style.display='flex'; 
+            document.getElementById('signupSection').style.display='none'; 
+        }
+
+        // --- CUSTOMER REGISTRATION FUNCTION ---
+        function registerCustomer() {
+            let u = document.getElementById('regUser').value;
+            let p = document.getElementById('regPass').value;
+            
+            if(!u || !p) return alert("Please enter a Username and Password to register!");
+
+            let users = JSON.parse(localStorage.getItem('popiaUsers')) || [];
+            let exists = users.find(user => user.username === u);
+            
+            if(exists) return alert("This username already exists. Please choose another.");
+
+            users.push({username: u, password: p});
+            localStorage.setItem('popiaUsers', JSON.stringify(users));
+            
+            alert("Registration Successful! Please log in at the Customer box.");
+            document.getElementById('regUser').value = "";
+            document.getElementById('regPass').value = "";
+            showLogin();
+        }
+
+        // --- CUSTOMER LOGIN FUNCTION ---
+        function loginCustomer() {
+            let u = document.getElementById('custUser').value;
+            let p = document.getElementById('custPass').value;
+
+            let users = JSON.parse(localStorage.getItem('popiaUsers')) || [];
+            let foundCustomer = users.find(user => user.username === u && user.password === p);
+
+            if(foundCustomer) {
+                document.getElementById('mainLogin').style.display='none';
+                document.getElementById('customerSection').style.display='flex';
+            } else {
+                alert("Account not found! Please check your username/password or register first.");
+            }
+        }
+
+        // --- STAFF LOGIN FUNCTION ---
+        function loginStaff() {
+            let u = document.getElementById('staffUser').value;
+            let p = document.getElementById('staffPass').value;
+
+            if(u === 'admin' && p === '1234') {
+                document.getElementById('mainLogin').style.display='none';
+                document.getElementById('staffSection').style.display='flex';
+                displayLastOrder();
+            } else {
+                alert("Access Denied! Incorrect staff username or password.");
+            }
+        }
+
+        // --- LOGOUT FUNCTION ---
+        function logout() { location.reload(); }
+
+        // --- CALCULATION & ORDER FUNCTION ---
+        function calculateTotal() {
+            let q = parseInt(document.getElementById('quantity').value);
+            if(isNaN(q) || q < 1) q = 1;
+            let total = q * pricePerPack;
+            document.getElementById('totalPrice').innerText = "RM " + total.toFixed(2);
+            return total.toFixed(2);
+        }
+
+        function processOrder() {
+            let n = document.getElementById('orderName').value;
+            let p = document.getElementById('orderPhone').value;
+            let a = document.getElementById('orderAddress').value;
+            let q = document.getElementById('quantity').value;
+            
+            if(!n || !p || !a) return alert("Please complete the form details!");
+
+            let t = calculateTotal();
+            let orderID = "ORD-" + Math.floor(Math.random() * 10000);
+            
+            let data = { id: orderID, name: n, qty: q, total: t, time: new Date().toLocaleString() };
+            localStorage.setItem("lastOrder_Popialicious", JSON.stringify(data));
+            
+            alert("Order successfully saved in the system! Opening WhatsApp...");
+            
+            let msg = `*POPIALICIOUS ONLINE ORDER*%0AID: ${orderID}%0AName: ${n}%0AAddress: ${a}%0AQuantity: ${q} packs%0A*Total: RM ${t}*`;
+            window.open(`https://wa.me/60174498109?text=${msg}`, '_blank');
+        }
+
+        // --- STAFF DASHBOARD FUNCTION ---
+        function displayLastOrder() {
+            let d = JSON.parse(localStorage.getItem("lastOrder_Popialicious"));
+            let area = document.getElementById('receiptArea');
+            if(d) {
+                area.innerHTML = `<b>Order ID:</b> ${d.id}<br><b>Date:</b> ${d.time}<br><b>Customer Name:</b> ${d.name}<br><b>Quantity:</b> ${d.qty} packs<br><b>Total:</b> RM ${d.total}<br><br><span class='text-success fw-bold'>● Active Data in LocalStorage</span>`;
+            } else {
+                area.innerHTML = "<i>No recent records found in the database.</i>";
+            }
+        }
+
+        function clearData() { 
+            localStorage.removeItem("lastOrder_Popialicious"); 
+            displayLastOrder(); 
+            alert("Order database has been cleared.");
+        }
+    </script>
+</body>
+</html>
